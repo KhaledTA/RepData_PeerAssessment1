@@ -1,15 +1,10 @@
----
-title: 'Reproducible Research: Peer Assessment 1'
-output:
-  pdf_document: default
-  html_document:
-    keep_md: yes
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 # Loads the data into R.
 activity <- read.csv("activity.csv")
 ```
@@ -17,7 +12,8 @@ activity <- read.csv("activity.csv")
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 # Aggregates steps by date.
 aggregated.date <- aggregate(steps ~ date, data = activity,
                              FUN = function(x) c(sum = sum(x)))
@@ -30,19 +26,22 @@ hist(aggregated.date$steps,
      col = "black",
      border = "white",
      breaks = 10)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
+```r
 # Computes mean and median steps taken per day.
 mean.per.day <- mean(aggregated.date$steps)
 median.per.day <- median(aggregated.date$steps)
-
 ```
 
-The mean number of steps taken per day is `r format(mean.per.day, nsmall = 2)` steps and the median number of steps taken per day is `r format(median.per.day, nsmall = 2)` steps.
+The mean number of steps taken per day is 10766.19 steps and the median number of steps taken per day is 10765 steps.
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 # Aggregates mean steps by interval.
 aggregated.interval <- aggregate(steps ~ interval, data = activity,
                                  FUN = function(x) c(mean = mean(x)))
@@ -53,22 +52,32 @@ plot(steps ~ interval, data = aggregated.interval, type = "l",
      xlab = "Consecutive 5-minute intervals throughout the day",
      ylab = "Average steps taken across all days measured",
      col = "black")
-
-# Finds the interval with the maximum number of average steps.
-most.active.interval <- aggregated.interval$interval[which(aggregated.interval$steps == max(aggregated.interval$steps))]
-
 ```
 
-On average, the maximum number of steps taken occurs during the 5-minute interval starting at the `r most.active.interval`th minute of the day.
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
+# Finds the interval with the maximum number of average steps.
+most.active.interval <- aggregated.interval$interval[which(aggregated.interval$steps == max(aggregated.interval$steps))]
+```
+
+On average, the maximum number of steps taken occurs during the 5-minute interval starting at the 835th minute of the day.
 
 
 
 ## Imputing missing values
 
-```{r}
+
+```r
 # Computes the total number of incomplete cases in the dataset.
 dim(activity[!complete.cases(activity),])[1]
+```
 
+```
+## [1] 2304
+```
+
+```r
 # Copies dataset before modifying.
 copie.activity <- activity
 
@@ -89,23 +98,27 @@ hist(aggregated.copie.date$steps,
      col = "black",
      border = "white",
      breaks = 10)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+```r
 # Computes mean and median steps taken per day.
 mean.per.day <- mean(aggregated.copie.date$steps)
 median.per.day <- median(aggregated.copie.date$steps)
-
 ```
 
-The mean number of steps taken per day with our dataset (the backup dataset, in wich replacing NA's with the mean number of steps for the given time interval) is `r format(mean.per.day, nsmall = 2)` steps.
+The mean number of steps taken per day with our dataset (the backup dataset, in wich replacing NA's with the mean number of steps for the given time interval) is 10766.19 steps.
 
-The median number of steps taken per day is `r format(median.per.day, nsmall = 2)` steps. 
+The median number of steps taken per day is 10766.19 steps. 
 
 Thus, after making this modification to our original dataset (filling in empty data), we found that the mean number of steps taken per day remained the same while the median shifted to match the mean. This ultimately creates less variance in the resulting distribution (compare histograms).
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 # Function to determine if a given weekday name is on the weekend or not.
 weekday.type <- function(day.of.week) {
     if (day.of.week == "Saturday" || day.of.week == "Sunday") {
@@ -126,10 +139,9 @@ aggregated.interval.weekday <- aggregate(steps ~ interval, data = activity[activ
 
 # Aggregates mean steps by interval for weekends.
 aggregated.interval.weekend <- aggregate(steps ~ interval, data = activity[activity$day == "weekend",], FUN = function(x) c(mean = mean(x)))
-
 ```
-```{r, fig.height = 10, fig.width = 6}
 
+```r
 # Changes plotting parameters.
 par(mfrow = c(2, 1))
 
@@ -145,8 +157,9 @@ plot(steps ~ interval, data = aggregated.interval.weekend, type = "l",
      xlab = "Consecutive 5-minute intervals throughout the day",
      ylab = "Average steps taken across all days measured",
      col = "black")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
 As we can see, stepping activity is much more uniformly distributed throughout the day on weekends. 
 This is likely because commuters walk a lot to get to work and then sit at a desk for most of the day on weekdays, but on weekends they tend to be active all throughout the day.
